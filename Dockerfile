@@ -1,4 +1,4 @@
-FROM       postgres:9.6
+FROM       postgres:alpine
 MAINTAINER Carlos Avila "cavila@mandelbrew.com"
 
 # Prep env
@@ -8,29 +8,32 @@ ENV        POSTGRES_HOST          ''
 ENV        POSTGRES_PORT          ''
 ENV        POSTGRES_USER 		  ''
 ENV        POSTGRES_PASSWORD      ''
-ENV        POSTGRES_EXTRA_OPTS    '-c'
-ENV        S3_ACCESS_KEY_ID       ''
-ENV        S3_SECRET_ACCESS_KEY   ''
-ENV        S3_BUCKET              ''
-ENV        S3_REGION              ''
-ENV        S3_PATH                ''
-ENV        S3_ENDPOINT            ''
-ENV        S3_S3V4                ''
-ENV        SCHEDULE               '0 0 * * *'
+ENV        POSTGRES_EXTRA_OPTS    '--format=c'
+ENV        AWS_ACCESS_KEY_ID      ''
+ENV        AWS_SECRET_ACCESS_KEY  ''
+ENV        AWS_S3_BUCKET          ''
+ENV        AWS_DEFAULT_REGION     ''
+ENV        AWS_S3_PATH            ''
+ENV        AWS_S3_ENDPOINT        ''
+ENV        AWS_S3_S3V4            ''
+ENV        CRON_TASK_1            '1 0 * * * sh /root/backup_postgres_to_s3.sh'
 
 # Operating System
-RUN        apt-get update -y \
-           && apt-get install -y \
-             awscli \
-           && apt-get autoremove -y \
-           && apt-get clean -y \
-           && rm -rf /var/lib/apt/lists/* \
-           && rm -rf /usr/share/man/*
+RUN        apk update \
+           && apk add --no-cache \
+               python3 \
+               curl \
+           && pip3 install --no-cache-dir --upgrade pip setuptools wheel \
+           && pip3 install --no-cache-dir \
+               awscli
 
-ADD        scripts/backup.sh /backup.sh
-ADD		   scripts/docker-cmd.sh /docker-cmd.sh
+# Application
+WORKDIR	   /root
 
-# Create the log file to be able to run tail
-RUN        touch /var/log/cron.log
+ADD        scripts/backup_postgres_to_s3.sh backup_postgres_to_s3.sh
+RUN        chmod +x backup_postgres_to_s3.sh
 
-CMD        ["sh", "docker-cmd.sh"]
+ADD        scripts/docker-cmd.sh docker-cmd.sh
+RUN        chmod +x docker-cmd.sh
+
+CMD        ["./docker-cmd.sh"]

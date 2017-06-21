@@ -1,18 +1,25 @@
-#!/bin/sh bash
+#!/usr/bin/env bash
 
 set -e
 
-if [ -z "${SCHEDULE}" ]; then
-    echo "You need to set the SCHEDULE environment variable."
+# Prep env
+IFS=$(echo -en "\n\b")
+CRONTAB=/etc/crontabs/root
+TASK_PREFIX='CRON_TASK_'
+
+# Sanity check
+if [ -z $(printenv | grep ${TASK_PREFIX}) ]; then
+    echo "You need to set at least one environment variable with prefix '${TASK_PREFIX}'."
     exit 1
 fi
 
-# Make env var available for cron jobs
-printenv | grep -v "no_proxy" >>/etc/environment
+# Parse custom tasks
+echo "# Custom tasks" >>${CRONTAB}
+for task in $(printenv | grep ${TASK_PREFIX} | cut -d= -f2); do
+    echo ${task} >>${CRONTAB}
+done
+echo "# An empty line is required at the end of this file for a valid cron file." >>${CRONTAB}
 
-echo "${SCHEDULE} root sh /backup.sh >>/var/log/cron.log 2>&1" >>/etc/crontab
-echo "# An empty line is required at the end of this file for a valid cron file." >>/etc/crontab
+# Start service
+crond -f -l 0
 
-echo "starting cron service..." >>/var/log/cron.log
-service cron start
-tail -f /var/log/cron.log
