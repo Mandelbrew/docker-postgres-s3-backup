@@ -14,7 +14,7 @@ ENV        POSTGRES_DB='' \
            POSTGRES_AWS_DEFAULT_REGION='' \
            POSTGRES_AWS_S3_PATH='' \
            POSTGRES_AWS_S3_ENDPOINT='' \
-           POSTGRES_AWS_S3_S3V4='' \
+           POSTGRES_AWS_S3_S3V4=''
 
 # Operating System
 RUN        apk update \
