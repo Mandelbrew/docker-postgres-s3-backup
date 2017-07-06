@@ -5,7 +5,18 @@ Backup PostgresSQL to S3 using a time-based scheduler
 
 Docker:
 ```sh
-$ docker run -e S3_ACCESS_KEY_ID=key -e S3_SECRET_ACCESS_KEY=secret -e S3_BUCKET=my-bucket -e S3_PREFIX=backup -e POSTGRES_DATABASE=dbname -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_HOST=localhost schickling/postgres-backup-s3
+$ docker run \
+    -e POSTGRES_DB='' \
+    -e POSTGRES_HOST='' \
+    -e POSTGRES_PORT='' \
+    -e POSTGRES_USER='' \
+    -e POSTGRES_PASSWORD='' \
+    -e POSTGRES_AWS_ACCESS_KEY_ID='' \
+    -e POSTGRES_AWS_SECRET_ACCESS_KEY='' \
+    -e POSTGRES_AWS_S3_BUCKET='' \
+    -e POSTGRES_AWS_DEFAULT_REGION='' \
+    -e POSTGRES_AWS_S3_PATH='' \
+    mandelbrew/docker-postgres-s3-backup
 ```
 
 Docker Compose:
@@ -16,28 +27,31 @@ postgres:
     POSTGRES_USER: user
     POSTGRES_PASSWORD: password
 
-pgbackups3:
-  image: schickling/postgres-backup-s3
+postgres_backups:
+  image: mandelbrew/docker-postgres-s3-backup
   links:
     - postgres
   environment:
-    SCHEDULE: '@daily'
-    S3_REGION: region
-    S3_ACCESS_KEY_ID: key
-    S3_SECRET_ACCESS_KEY: secret
-    S3_BUCKET: my-bucket
-    S3_PREFIX: backup
-    POSTGRES_DATABASE: dbname
-    POSTGRES_USER: user
-    POSTGRES_PASSWORD: password
-    POSTGRES_EXTRA_OPTS: '--schema=public --blobs'
+    # AWS
+    POSTGRES_AWS_ACCESS_KEY_ID:
+    POSTGRES_AWS_DEFAULT_REGION:
+    POSTGRES_AWS_S3_BUCKET:
+    POSTGRES_AWS_S3_PATH:
+    POSTGRES_AWS_SECRET_ACCESS_KEY:
+    # DB
+    POSTGRES_DB:
+    POSTGRES_HOST:
+    POSTGRES_PASSWORD:
+    POSTGRES_PORT:
+    POSTGRES_USER:
 ```
 
 ### Automatic Periodic Backups
 
-You can additionally set the `SCHEDULE` environment variable like `-e SCHEDULE="@daily"` to run the backup automatically.
+You can additionally set the `POSTGRES_CRON_TASK_*` environment variables like `-e POSTGRES_CRON_TASK_1='0 0 * * * sh /opt/docker/backup_postgres_to_s3.sh'` to run the 
+backup automatically.
 
-More information about the scheduling can be found [here](http://godoc.org/github.com/robfig/cron#hdr-Predefined_schedules).
+More information about the scheduling can be found [here](#TODO).
 
 ## Credits
 

@@ -1,26 +1,26 @@
-FROM       postgres:alpine
+FROM       alpine:3.6
 MAINTAINER Carlos Avila "cavila@mandelbrew.com"
 
-# Prep env
-ENV        DEBIAN_FRONTEND        noninteractive
-ENV 	   POSTGRES_DATABASE      ''
-ENV        POSTGRES_HOST          ''
-ENV        POSTGRES_PORT          ''
-ENV        POSTGRES_USER 		  ''
-ENV        POSTGRES_PASSWORD      ''
-ENV        POSTGRES_EXTRA_OPTS    '--format=c'
-ENV        AWS_ACCESS_KEY_ID      ''
-ENV        AWS_SECRET_ACCESS_KEY  ''
-ENV        AWS_S3_BUCKET          ''
-ENV        AWS_DEFAULT_REGION     ''
-ENV        AWS_S3_PATH            ''
-ENV        AWS_S3_ENDPOINT        ''
-ENV        AWS_S3_S3V4            ''
-ENV        CRON_TASK_1            '1 0 * * * sh /root/backup_postgres_to_s3.sh'
+# Prep environment
+ENV        POSTGRES_DB='' \
+           POSTGRES_HOST='' \
+           POSTGRES_PORT='' \
+           POSTGRES_USER='' \
+           POSTGRES_PASSWORD='' \
+           POSTGRES_EXTRA_OPTS='--format=c' \
+           POSTGRES_AWS_ACCESS_KEY_ID='' \
+           POSTGRES_AWS_SECRET_ACCESS_KEY='' \
+           POSTGRES_AWS_S3_BUCKET='' \
+           POSTGRES_AWS_DEFAULT_REGION='' \
+           POSTGRES_AWS_S3_PATH='' \
+           POSTGRES_AWS_S3_ENDPOINT='' \
+           POSTGRES_AWS_S3_S3V4='' \
+           POSTGRES_CRON_TASK_1='0 0 * * * sh /opt/docker/backup_postgres_to_s3.sh'
 
 # Operating System
 RUN        apk update \
            && apk add --no-cache \
+               postgresql \
                python3 \
                curl \
            && pip3 install --no-cache-dir --upgrade pip setuptools wheel \
@@ -28,7 +28,7 @@ RUN        apk update \
                awscli
 
 # Application
-WORKDIR	   /root
+WORKDIR	   /opt/docker
 
 ADD        scripts/backup_postgres_to_s3.sh backup_postgres_to_s3.sh
 RUN        chmod +x backup_postgres_to_s3.sh

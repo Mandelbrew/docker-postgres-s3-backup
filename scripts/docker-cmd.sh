@@ -1,11 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-set -e
+set -ef
+# set -x # Debug mode
 
 # Prep env
 IFS=$(echo -en "\n\b")
 CRONTAB=/etc/crontabs/root
-TASK_PREFIX='CRON_TASK_'
+TASK_PREFIX='POSTGRES_CRON_TASK_'
 
 # Sanity check
 if [ -z $(printenv | grep ${TASK_PREFIX}) ]; then
