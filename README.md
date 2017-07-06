@@ -8,8 +8,8 @@
 
 This image tracks the official alpine repository and the package versions that come with it. 
 
-- 3.5: postgresql-9.6.3-r0, aws-cli-1.11.116, Python-3.5.2, botocore/1.5.79
-- 3.6: postgresql-9.6.3-r0, aws-cli-1.11.116, Python-3.6.1, botocore-1.5.79
+- 3.5: alpine:3.5, postgresql-9.6.3-r0, aws-cli-1.11.116, Python-3.5.2, botocore-1.5.79
+- 3.6: alpine:3.6, postgresql-9.6.3-r0, aws-cli-1.11.116, Python-3.6.1, botocore-1.5.79
 
 # How to use this image
 
