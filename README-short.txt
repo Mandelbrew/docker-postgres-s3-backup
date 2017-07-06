@@ -1,1 +1,1 @@
-Backup PostgresSQL databases to S3 using cron, a time-based job scheduler.
+Backup PostgresSQL databases to S3 once or using a time-based job scheduler.
