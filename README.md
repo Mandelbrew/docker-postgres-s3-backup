@@ -1,5 +1,17 @@
-# docker-postgres-backup-s3
-Backup PostgresSQL to S3 using a time-based scheduler
+# Supported tags and respective `Dockerfile` links
+
+-	[`3.5` (*3.5/Dockerfile*)](https://github.com/Mandelbrew/docker-postgres-s3-backup/blob/3.5/Dockerfile)
+-	[`3.6`,`latest` (*3.6/Dockerfile*)](https://github.com/Mandelbrew/docker-postgres-s3-backup/blob/3.6/Dockerfile)
+
+
+# What is docker-postgres-s3-backup?
+
+This image tracks the official alpine repository and the package versions that come with it. 
+
+- 3.5: postgresql-9.6.3-r0, aws-cli-1.11.116, Python-3.5.2, botocore/1.5.79
+- 3.6: postgresql-9.6.3-r0, aws-cli-1.11.116, Python-3.6.1, botocore-1.5.79
+
+# How to use this image
 
 ## Usage
 
@@ -46,14 +58,14 @@ postgres_backups:
     POSTGRES_USER:
 ```
 
-### Automatic Periodic Backups
+## Automatic Periodic Backups
 
 You can additionally set the `POSTGRES_CRON_TASK_*` environment variables like `-e POSTGRES_CRON_TASK_1='0 0 * * * sh /opt/docker/backup_postgres_to_s3.sh'` to run the 
 backup automatically.
 
 More information about the scheduling can be found [here](#TODO).
 
-## Credits
+# Credits
 
 Based on Schickling's postgres-backup-s3: 
 
