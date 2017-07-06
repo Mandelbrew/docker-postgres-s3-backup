@@ -15,7 +15,6 @@ ENV        POSTGRES_DB='' \
            POSTGRES_AWS_S3_PATH='' \
            POSTGRES_AWS_S3_ENDPOINT='' \
            POSTGRES_AWS_S3_S3V4='' \
-           POSTGRES_CRON_TASK_1='0 0 * * * sh /opt/docker/backup_postgres_to_s3.sh'
 
 # Operating System
 RUN        apk update \

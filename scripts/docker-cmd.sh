@@ -10,8 +10,9 @@ TASK_PREFIX='POSTGRES_CRON_TASK_'
 
 # Sanity check
 if [ -z $(printenv | grep ${TASK_PREFIX}) ]; then
-    echo "You need to set at least one environment variable with prefix '${TASK_PREFIX}'."
-    exit 1
+    # Run once
+    ./backup_postgres_to_s3.sh
+    exit 0;
 fi
 
 # Parse custom tasks

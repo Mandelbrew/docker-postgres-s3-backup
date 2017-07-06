@@ -38,9 +38,9 @@ if [ -z "${POSTGRES_AWS_S3_PATH}" ]; then
 fi
 
 if [ -z "${POSTGRES_AWS_S3_ENDPOINT}" ]; then
-    AWS_OPTS=""
+    AWS_EXTRA_OPTS=""
 else
-    AWS_OPTS="--endpoint-url ${POSTGRES_AWS_S3_ENDPOINT}"
+    AWS_EXTRA_OPTS="--endpoint-url ${POSTGRES_AWS_S3_ENDPOINT}"
 fi
 
 if [ "${POSTGRES_AWS_S3_S3V4}" = "yes" ]; then
@@ -72,18 +72,24 @@ if [ -z "${POSTGRES_PASSWORD}" ]; then
     exit 1
 fi
 
-# Prep env
+# Prep environment
 export PGPASSWORD=${POSTGRES_PASSWORD}
-TMP_BACKUP_TARGET=/opt/docker/dump.sql.gz
+TMP_TARGET=/opt/docker/dump.sql.gz
 AWS_TARGET="s3://${POSTGRES_AWS_S3_BUCKET}${POSTGRES_AWS_S3_PATH}${POSTGRES_DB}_$(date +"%Y-%m-%dT%H:%M:%SZ").sql.gz"
-POSTGRES_CMD="-d ${POSTGRES_DB} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER} ${POSTGRES_EXTRA_OPTS}"
-AWS_CMD="${AWS_OPTS} s3 cp ${TMP_BACKUP_TARGET} ${AWS_TARGET}"
 
 # Execute backup
 echo "Creating dump of ${POSTGRES_DB} database from ${POSTGRES_HOST}..."
-pg_dump ${POSTGRES_CMD} | gzip >${TMP_BACKUP_TARGET}
+pg_dump \
+    ${POSTGRES_EXTRA_OPTS} \
+    -d ${POSTGRES_DB} \
+    -h ${POSTGRES_HOST} \
+    -p ${POSTGRES_PORT} \
+    -U ${POSTGRES_USER} \
+     | gzip >${TMP_TARGET}
 
 echo "Uploading dump to ${POSTGRES_AWS_S3_BUCKET}"
-aws ${AWS_CMD} || exit 2
+aws \
+    ${AWS_EXTRA_OPTS} \
+    s3 cp ${TMP_TARGET} ${AWS_TARGET} || exit 2
 
 echo "SQL backup uploaded successfully"
